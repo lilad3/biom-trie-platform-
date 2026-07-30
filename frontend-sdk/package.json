@@ -1,0 +1,18 @@
+{
+  "name": "@biometric-platform/frontend-sdk",
+  "version": "1.0.0",
+  "description": "SDK JavaScript masquant totalement le lecteur biométrique (DigitalPersona) et les appels HTTP vers biometric-api derrière une API simple (BiometricScanner, BiometricClient).",
+  "main": "dist/biometric-sdk.js",
+  "scripts": {
+    "build": "bash build.sh",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom"
+  },
+  "license": "UNLICENSED"
+}

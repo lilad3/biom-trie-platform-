@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "biometric-client"
+version = "1.0.0"
+description = "SDK officiel Python pour biometric-api : enroll/identify/verify/delete sans jamais écrire de requête HTTP manuelle ni calculer de signature HMAC."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0",
+    "responses>=0.25",
+]
+
+[tool.setuptools.packages.find]
+include = ["biometric_client*"]

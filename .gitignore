@@ -1,0 +1,20 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# --- Secrets et données sensibles : ne JAMAIS committer ---
+.env
+*.env
+!.env.example
+
+# --- Données runtime : templates chiffrés, audit log ---
+data/
+
+# --- IDE / OS ---
+.vscode/
+.idea/
+.DS_Store

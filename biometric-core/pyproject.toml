@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "biometric-core"
+version = "1.0.0"
+description = "Cœur biométrique indépendant : extraction SIFT, matching FLANN/RANSAC, chiffrement AES-256-GCM, stockage chiffré. Aucune dépendance web/framework."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "opencv-python-headless>=4.9",
+    "numpy>=1.26",
+    "cryptography>=42.0",
+    "pydantic-settings>=2.2",
+]
+
+[tool.setuptools.packages.find]
+include = ["biometric_core*"]

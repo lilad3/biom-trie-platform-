@@ -1,0 +1,16 @@
+{
+  "name": "biometric-client",
+  "version": "1.0.0",
+  "description": "SDK officiel Node.js pour biometric-api : enroll/identify/verify/delete sans fetch manuel ni calcul de signature HMAC.",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "license": "UNLICENSED"
+}

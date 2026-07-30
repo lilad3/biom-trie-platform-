@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Exemple frontend-sdk — biometric-platform</title>
+</head>
+<body>
+  <!--
+    Exemple d'intégration CORRECTE du frontend-sdk dans n'importe quel site
+    (Django, Laravel, Node...).
+
+    ⚠️ RÈGLE DE SÉCURITÉ NON NÉGOCIABLE :
+    BiometricClient n'appelle JAMAIS directement biometric-api. Il appelle
+    UNIQUEMENT un endpoint proxy exposé par l'application hôte (déjà
+    authentifiée via JWT/session/RBAC), qui elle-même relaie la requête vers
+    biometric-api côté serveur avec la signature HMAC inter-services.
+
+    Pourquoi : biometric-api exige SERVICE_AUTH_TOKEN pour authentifier
+    l'appelant. Ce jeton est un secret serveur qui ne doit JAMAIS être
+    visible dans du JavaScript exécuté dans le navigateur.
+  -->
+
+  <!-- 1. SDK bas niveau DigitalPersona (jamais manipulé directement par le développeur) -->
+  <script src="../vendor/fingerprint.sdk.min.js"></script>
+  <script src="../vendor/websdk.client.min.js"></script>
+
+  <!-- 2. Le SDK biometric-platform : BiometricScanner + BiometricClient -->
+  <script src="../dist/biometric-sdk.js"></script>
+
+  <script>
+    // baseUrl pointe vers le backend DU SITE (proxy), jamais vers
+    // biometric-api directement. Voir connectors/django/ pour l'implémentation
+    // côté serveur de ces endpoints proxy.
+    const client = new BiometricClient({
+      baseUrl: "/api/biometrie",
+      headers: {
+        // Exemple : jeton CSRF Django, ou header Authorization selon l'appli hôte.
+        "X-CSRFToken": document.querySelector('meta[name="csrf-token"]')?.content,
+      },
+    });
+
+    const scanner = new BiometricScanner();
+
+    // --- Enregistrement d'une empreinte (page employés, réservée admin) ---
+    async function enrollFingerprint(employeeId, fingerType) {
+      const capture = await scanner.capture({
+        onQuality: (q) => console.log(`Qualité en cours : ${q.percent}%`),
+      });
+
+      if (!capture.isAcceptable) {
+        throw new Error("Qualité de capture insuffisante, réessayez.");
+      }
+
+      return client.enroll(employeeId, fingerType, capture.image);
+    }
+
+    // --- Pointage au terminal (page autonome, identification 1:N) ---
+    async function identifyAndClockIn() {
+      const capture = await scanner.capture();
+
+      if (!capture.isAcceptable) {
+        throw new Error("Qualité de capture insuffisante, réessayez.");
+      }
+
+      const result = await client.identify(capture.image);
+      if (!result.success) {
+        throw new Error(result.message || "Empreinte non reconnue.");
+      }
+      return result; // { employeeId, score, ... }
+    }
+
+    // --- Double authentification (badge + empreinte, vérification 1:1) ---
+    async function verifyBadgeHolder(employeeId) {
+      const capture = await scanner.capture();
+      const result = await client.verify(employeeId, capture.image);
+      return result.match;
+    }
+  </script>
+</body>
+</html>
