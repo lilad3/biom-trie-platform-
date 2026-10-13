@@ -1,0 +1,16 @@
+# Seuls biometric-api/ et biometric-core/ sont utiles à l'image :
+# on exclut le reste pour un build plus rapide et sans fuite de secrets.
+.git
+.env
+*.env
+data/
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/node_modules
+.venv
+venv
+client-sdk
+frontend-sdk
+docs
+tests

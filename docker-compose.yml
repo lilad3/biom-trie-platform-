@@ -1,0 +1,36 @@
+# Lancer la plateforme :
+#   1. cp .env.example .env   puis remplir SERVICE_AUTH_TOKEN et BIOMETRIC_ENCRYPTION_KEY
+#   2. docker compose up -d --build
+#   3. curl http://localhost:8001/health
+services:
+  biometric-api:
+    build:
+      context: .
+      dockerfile: biometric-api/Dockerfile
+    image: biometric-api:latest
+    env_file: .env
+    environment:
+      # Arrête `docker compose up` avec un message clair si un secret manque,
+      # au lieu de laisser l'API planter au démarrage.
+      SERVICE_AUTH_TOKEN: ${SERVICE_AUTH_TOKEN:?SERVICE_AUTH_TOKEN manquant dans .env}
+      BIOMETRIC_ENCRYPTION_KEY: ${BIOMETRIC_ENCRYPTION_KEY:?BIOMETRIC_ENCRYPTION_KEY manquant dans .env}
+    ports:
+      # Lié à 127.0.0.1 : l'API est un service interne, appelé par votre backend,
+      # jamais exposée directement sur le réseau.
+      - "127.0.0.1:8001:8001"
+    volumes:
+      # Templates chiffrés + audit log : conservés quand le conteneur est recréé
+      - biometric-data:/app/data
+    restart: unless-stopped
+    # Durcissement : système de fichiers en lecture seule (sauf data/ et /tmp),
+    # aucune capacité Linux, pas d'élévation de privilèges.
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  biometric-data:

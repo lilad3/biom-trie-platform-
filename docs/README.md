@@ -83,6 +83,40 @@ le `frontend-sdk` si vous capturez des empreintes dans un navigateur.
 `biometric-api` est le seul composant qui doit tourner en permanence,
 généralement comme un service interne (pas exposé directement à Internet).
 
+### Option A — Avec Docker Compose (recommandé)
+
+Seul Docker est nécessaire : pas besoin d'installer Python, OpenCV ni les
+dépendances sur votre machine.
+
+```bash
+# 1. Configurer
+cp .env.example .env
+# Éditer .env : générer BIOMETRIC_ENCRYPTION_KEY et SERVICE_AUTH_TOKEN
+# (les commandes à lancer sont indiquées en commentaire dans le fichier)
+
+# 2. Construire l'image et lancer le service en arrière-plan
+docker compose up -d --build
+
+# Suivre les logs / arrêter
+docker compose logs -f
+docker compose down
+```
+
+Ce que fait `docker-compose.yml` :
+
+| Réglage | Pourquoi |
+|---|---|
+| Port lié à `127.0.0.1:8001` | L'API reste interne : seul votre backend (sur la même machine) peut l'appeler |
+| Volume `biometric-data` monté sur `/app/data` | Les templates chiffrés et l'audit log survivent à la recréation du conteneur |
+| Vérification de `SERVICE_AUTH_TOKEN` / `BIOMETRIC_ENCRYPTION_KEY` | `docker compose up` s'arrête avec un message clair si un secret manque dans `.env` |
+| Utilisateur non-root, `read_only`, `cap_drop: ALL`, `no-new-privileges` | Limite les dégâts si le service est compromis |
+| `HEALTHCHECK` sur `/health` | `docker compose ps` affiche `healthy` quand l'API répond |
+
+> ⚠️ `docker compose down -v` supprime aussi le volume, donc **toutes les
+> empreintes enrôlées**. Sans `-v`, les données sont conservées.
+
+### Option B — Installation Python manuelle
+
 ```bash
 # 1. Installer le cœur biométrique
 pip install -e ./biometric-core
@@ -107,6 +141,9 @@ curl http://localhost:8001/health
 ```
 
 La documentation interactive Swagger est disponible sur `http://localhost:8001/docs`.
+
+Pour lancer les tests (option B uniquement), installez aussi les dépendances
+de développement : `pip install -r biometric-api/requirements-dev.txt`, puis `pytest`.
 
 ---
 
@@ -340,6 +377,7 @@ biometric-platform/
 │   ├── php/                 SDK serveur PHP
 │   └── java/                 SDK serveur Java
 ├── connectors/             intégrations prêtes à l'emploi par framework (en cours)
+├── docker-compose.yml      lancement du serveur en une commande (voir section 3)
 ├── tests/                    tests de biometric-core / biometric-api / intégration bout-en-bout
 └── docs/                     ce fichier
 ```

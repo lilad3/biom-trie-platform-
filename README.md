@@ -16,6 +16,16 @@ Java) + un SDK frontend pour la capture dans le navigateur.
 | `tests/`          | Tests Python                                                 |
 | `docs/`           | Documentation complète                                       |
 
+## Démarrage rapide (Docker)
+
+```bash
+cp .env.example .env      # puis remplir SERVICE_AUTH_TOKEN et BIOMETRIC_ENCRYPTION_KEY
+docker compose up -d --build
+curl http://localhost:8001/health
+```
+
+Documentation interactive de l'API : http://localhost:8001/docs
+
 ## Documentation
 
 Toute la documentation (installation, intégration, protocole de sécurité,
