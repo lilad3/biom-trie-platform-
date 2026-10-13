@@ -18,3 +18,6 @@ data/
 .vscode/
 .idea/
 .DS_Store
+
+# --- SDK tiers DigitalPersona/HID : non redistribués, à télécharger soi-même ---
+frontend-sdk/vendor/*.js

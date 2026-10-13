@@ -13,6 +13,9 @@ tout matériel de capture biométrique) derrière une API simple.
 
 ## Usage
 
+> Les deux fichiers `vendor/` (SDK DigitalPersona) ne sont pas fournis dans le dépôt :
+> voir [vendor/README.md](vendor/README.md) pour les télécharger.
+
 ```html
 <script src="vendor/fingerprint.sdk.min.js"></script>
 <script src="vendor/websdk.client.min.js"></script>

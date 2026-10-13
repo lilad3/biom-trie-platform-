@@ -228,6 +228,9 @@ def identify_view(request):
 
 ## 5. Intégrer le frontend (capture d'empreinte dans le navigateur)
 
+> Les deux fichiers `vendor/` (SDK DigitalPersona) ne sont pas fournis dans le dépôt :
+> voir [vendor/README.md](../frontend-sdk/vendor/README.md) pour les télécharger.
+
 ```html
 <script src="vendor/fingerprint.sdk.min.js"></script>
 <script src="vendor/websdk.client.min.js"></script>
